@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from app.scraper import fetch_trending_github_repos, fetch_top_hn_stories
 from app.analyzer import generate_trend_digest
+from app.notifier import send_telegram_notification
 
 load_dotenv()
 
@@ -15,15 +16,13 @@ async def main():
     print("🤖 Processing with LLM...")
     digest = generate_trend_digest(github_repos, hn_stories)
     
-    print("\n--- DAILY TECH DIGEST ---")
-    print(json.dumps(digest.model_dump(), indent=2))
-    
-    # Save output as a JSON artifact for downstream CI/CD tasks
+    # Local artifact storage
     os.makedirs("output", exist_ok=True)
     with open("output/digest.json", "w") as f:
         json.dump(digest.model_dump(), f, indent=2)
         
-    print("\n✅ Digest successfully created in output/digest.json!")
+    print("📬 Sending to Telegram...")
+    await send_telegram_notification(digest)
 
 if __name__ == "__main__":
     asyncio.run(main())

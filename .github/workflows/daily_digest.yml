@@ -2,9 +2,8 @@ name: Daily Tech Trend Digest
 
 on:
   schedule:
-    # Runs at 08:00 UTC every day
     - cron: '0 8 * * *'
-  workflow_dispatch: # Allows manual triggers from GitHub UI
+  workflow_dispatch:
 
 jobs:
   run-analyzer:
@@ -27,6 +26,8 @@ jobs:
       - name: Execute Trend Analyzer Bot
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python -m app.main
 
